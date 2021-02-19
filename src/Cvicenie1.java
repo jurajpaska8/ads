@@ -5,6 +5,10 @@ import java.util.*;
 
 public class Cvicenie1 {
 
+    /**
+     * Loads mattrix of integers from given path.
+     *
+     * */
     private static int[][] loadMattrix(String path) throws FileNotFoundException {
         Scanner sc = new Scanner(new BufferedReader(new FileReader(path)));
         int rows = sc.nextInt();
@@ -48,19 +52,6 @@ public class Cvicenie1 {
         return min;
     }
 
-    private static int returnMinAbsValue(int[] arr)
-    {
-        int min = Integer.MAX_VALUE;
-        for(int i = 1; i < arr.length; i++)
-        {
-            if(min > Math.abs(arr[i]))
-            {
-                min = Math.abs(arr[i]);
-            }
-        }
-        return min;
-    }
-
     /**
      * Shuffles rows of array.
      *
@@ -72,6 +63,11 @@ public class Cvicenie1 {
         return asList.toArray(new int[0][0]);
     }
 
+    /**
+     * This algo. is based on summing numbers with "select lowest absolute value of next sum" rule. It means that
+     * it will add number in order to make sum nearest to 0 as possible.
+     *
+     * */
     private static int greedySumAlgo1(int[][] arr, List<Integer> numbers)
     {
         int sum = 0;
@@ -79,17 +75,15 @@ public class Cvicenie1 {
         int addedNumber;
         for (int[] ints : arr) {
             // select first member of row and add to sum
-            tmp = sum + ints[0];
             addedNumber = ints[0];
             for (int col = 1; col < ints.length; col++) {
                 // try to find sum 'sum + ints[col]' nearest to 0
-                if(compareAbsoluteValues(tmp, sum + ints[col]))
+                if(compareAbsoluteValues(sum + ints[0], sum + ints[col]))
                 {
-                    tmp = sum + ints[col];
                     addedNumber = ints[col];
                 }
             }
-            sum = tmp;
+            sum += addedNumber;
             numbers.add(addedNumber);
         }
 
@@ -97,32 +91,41 @@ public class Cvicenie1 {
     }
 
     /**
-     * TODO
+     * TODO idea: select lowest number until we reach minus sum. Then add numbers in order to approach 0
      *
      * */
-    private static int greedySumAlgo2(int[][] arr)
+    private static int greedySumAlgo2(int[][] arr, List<Integer> addedNumbers)
     {
         int sum = 0;
         int tmp = 0;
         for (int[] ints : arr) {
-            // select first member of row and add to sum
-            sum += sum + ints[0];
-            for (int col = 1; col < ints.length; col++) {
-                // try to find sum 'sum + ints[col]' nearest to 0
-                if(compareAbsoluteValues(tmp, sum + ints[col]))
-                {
-                    tmp = sum + ints[col];
-                }
+            // add lowest number until we reach minus sum
+            if(sum > 0)
+            {
+                sum += returnMin(ints);
             }
-            sum = tmp;
+            else
+            {
+                tmp = sum + ints[0];
+                for (int col = 1; col < ints.length; col++) {
+                    // try to find sum 'sum + ints[col]' nearest to 0
+                    if(compareAbsoluteValues(tmp, sum + ints[col]))
+                    {
+                        tmp = sum + ints[col];
+                    }
+                }
+                sum = tmp;
+            }
         }
-
         return sum;
     }
+
+    // TODO third approach
 
     public static void main(String[] args) {
         try
         {
+            final int maxIter =100_000;
             int sum;
             int iter = 0;
             int[][] arr = loadMattrix("data/cvicenie1data.txt");
@@ -132,20 +135,14 @@ public class Cvicenie1 {
             do
             {
                 addedNumbers.clear();
-                sum = greedySumAlgo1(arr, addedNumbers);
+                sum = greedySumAlgo2(arr, addedNumbers);
                 System.out.println("iter: " + iter + " sum:" + sum);
                 arr = shuffleRows(arr);
                 iter++;
-            } while(sum != 0);
+            } while(sum != 0 && iter < maxIter);
 
-            int checkSum = 0;
-            for(int i : addedNumbers){
-                checkSum += i;
-            }
-            System.out.println(checkSum);
-
-            checkSum = addedNumbers.stream().mapToInt(Integer::intValue).sum();
-            System.out.println(checkSum);
+            int checkSum = addedNumbers.stream().mapToInt(Integer::intValue).sum();
+            System.out.println("Sum = " + checkSum);
 
         }
         catch(Exception e)
