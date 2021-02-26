@@ -103,28 +103,80 @@ public class Cvicenie2 {
         return -1;
     }
 
-    public static int findShortestPath(int[] citiesDistances, int idx, int fine, int min)
+    public static int findShortestPath(int[] citiesDistances, int idx, boolean recursion)
     {
         if(idx >= citiesDistances.length - 1)
         {
-            if(fine<500_000 && fine<min)
-            {
-                System.out.println(fine);
-                min = fine;
-                return fine;
-            }
+            return 0;
         }
         int distance = citiesDistances[idx];
         int lastIdx = findIndexOfClosestFromPassed(citiesDistances, distance + 400);
         int pen = Integer.MAX_VALUE;
-        //int wantedIdx = idx;
-        for(int i = lastIdx; i >= idx + 1; i--)
+        for(int i = lastIdx; i > idx; i--)
         {
             int tmp = (distance + 400 - citiesDistances[i])*(distance + 400 - citiesDistances[i]);
-            findShortestPath(citiesDistances, i, fine + tmp, min);
+            pen = Math.min(pen, tmp + findShortestPath(citiesDistances, i, true));
         }
-        return fine;
+        if(!recursion)
+        {
+            System.out.println(pen);
+        }
+        return pen;
     }
+
+    public static int findShortestPath2(int[] cities, int idx)
+    {
+        if(idx == cities.length - 1)
+        {
+            return 0;
+        }
+        int fine = Integer.MAX_VALUE;
+        for(int i = idx + 1; i < cities.length; i++)
+        {
+//            int tmp = (distance + 400 - citiesDistances[i])*(distance + 400 - citiesDistances[i]);
+//            pen = Math.min(pen, tmp + findShortestPath(citiesDistances, i, true));
+        }
+
+        return 0;
+    }
+
+    public static int[] initializeOnMax(int n)
+    {
+        int[] arr = new int [n];
+        for(int i = 0; i < n; i++)
+        {
+            arr[i] = Integer.MAX_VALUE;
+        }
+        return arr;
+    }
+
+    public static int findShortestPathNoRecursion(int[] cities)
+    {
+        int[] visitedMin = new int[cities.length];
+        // from second to last
+        for(int i = cities.length - 2; i >= 0; i--)
+        {
+            // initialize minimal penalty
+            double penMin = Double.MAX_VALUE;
+            // iterate from nearest town to last town
+            for(int j = i + 1; j < cities.length; j++)
+            {
+                // calculate fine if we choose jump from i to j
+                double diff = cities[j] - cities[i];
+                double fine = (400 - diff) * (400 - diff);
+                // find out which jump has minimal penalty
+                penMin = Math.min(fine + visitedMin[j], penMin);
+            }
+            visitedMin[i] = (int)penMin;
+
+            if(i < 2)
+            {
+                System.out.println("Break");
+            }
+        }
+        return visitedMin[0];
+    }
+
 
     public static void main(String[] args) {
         //init
@@ -140,10 +192,15 @@ public class Cvicenie2 {
         try
         {
             int[] citiesDistances = loadRows("data/cvicenie2data.txt");
-            int distance = 0;
-            findShortestPath(citiesDistances, 0, 0, Integer.MAX_VALUE);
-
-            System.out.println("Done");
+            int[] citiesDistancesWithStart = new int[citiesDistances.length + 1];
+            for(int i = 1; i<= citiesDistances.length; i++)
+            {
+                citiesDistancesWithStart[i] = citiesDistances[i - 1];
+            }
+            int fine = 0;
+            //findShortestPath(citiesDistances, 0, false);
+            fine = findShortestPathNoRecursion(citiesDistancesWithStart);
+            System.out.println("Done. Fine = " + fine);
         }
         catch (FileNotFoundException e)
         {
