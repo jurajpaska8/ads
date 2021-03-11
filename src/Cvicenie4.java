@@ -70,7 +70,7 @@ public class Cvicenie4 {
         return arr[n][W];
     }
 
-    private static int knappSackProblemExercise(int W, int values[], int weights[], int n)
+    private static int knappSackProblemExercise(int W, int[] values, int[] weights, int n)
     {
         // we have 2000 rows, but we can choose only from doubles (0th or 1th, 2th or 3th...)
         // therefore matrix with n / 2 + 1 rows is sufficient
