@@ -75,6 +75,53 @@ public class Cvicenie4 {
         return arr[n][W];
     }
 
+    private static int knappSackProblemExercise(int W, int values[], int weights[], int n)
+    {
+        // we have 2000 rows, but we can choose only from doubles (0th or 1th, 2th or 3th...)
+        // therefore matrix with n / 2 + 1 rows is sufficient
+        int arr[][] = new int[n / 2 + 1][W + 1];
+        int tmp = 0;
+        // construct table
+        for(int i = 0; i <= n / 2; i++)
+        {
+            for(int w = 0; w <= W; w++)
+            {
+                // first row and first column with zeros
+                if(i == 0 || w ==0)
+                {
+                    arr[i][w] = 0;
+                }
+
+                // if we can not take items due to its weight
+                else if((weights[2 * i - 1] > w) && (weights[2 * i - 2] > w))
+                {
+                    arr[i][w] = arr[i - 1][w];
+                }
+
+                // if we can afford only item with higher index
+                else if((weights[2 * i - 1] <= w)  && (weights[2 * i - 2] > w) )
+                {
+                    arr[i][w] = Math.max(arr[i - 1][w], values[2 * i - 1] + arr[i - 1][w - weights[2 * i - 1]]);
+                }
+
+                // if we can afford only item with lower index
+                else if((weights[2 * i - 1] > w)  && (weights[2 * i - 2] <= w) )
+                {
+                    arr[i][w] = Math.max(arr[i - 1][w], values[2 * i - 2] + arr[i - 1][w - weights[2 * i - 2]]);
+                }
+
+                // else we choose maximum with/without selecting item
+                else
+                {
+                    arr[i][w] = Math.max(arr[i - 1][w],
+                                    Math.max(values[2 * i - 2] + arr[i - 1][w - weights[2 * i - 2]],
+                                            values[2 * i - 1] + arr[i - 1][w - weights[2 * i - 1]]));
+                }
+            }
+        }
+        return arr[n / 2][W];
+    }
+
     public static void main(String[] args) {
         try
         {
@@ -93,6 +140,7 @@ public class Cvicenie4 {
                 weights[i] = transformedMattrix[i][1];
             }
             int maxKnapsackValue = knapSackProblemBasic(W, values, weights, 2000, listOfIndexes);
+            int maxKnapsackValueExercise = knappSackProblemExercise(W, values, weights, 2000);
             System.out.println("End");
         }
         catch (FileNotFoundException e)
