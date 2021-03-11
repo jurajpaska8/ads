@@ -45,10 +45,13 @@ public class Cvicenie3 {
 
     public static int calculateDeformation(int[][] mattrix)
     {
+        // iterate from behind
         for(int i = mattrix.length - 2; i >= 0; i--)
         {
             for(int j = 0; j < mattrix[0].length; j++)
             {
+                // calculate minimum of next row and neighboring cols
+                // mattrix[i + 1][j - 1], mattrix[i + 1][j], mattrix[i + 1][j + 1]
                 mattrix[i][j] += returnMinFromNeighborsAndCurrent(mattrix[i + 1], j);
             }
         }
@@ -59,6 +62,7 @@ public class Cvicenie3 {
 //                mattrix[i][j] += returnMinFromNeighborsAndCurrent(mattrix[i - 1], j);
 //            }
 //        }
+        // return minimum of first row
         return Arrays
                 .stream(mattrix[0])
                 .min()
@@ -90,12 +94,17 @@ public class Cvicenie3 {
     {
         try
         {
+            // load mattrix
             int[][] mattrix = loadMattrix("data/cvicenie3data.txt");
+            // deformation from behind
             int def = calculateDeformation(mattrix);
-            System.out.println(def);
+            System.out.println("Deformation from behind = " + def);
+
+            // load mattrix
             mattrix = loadMattrix("data/cvicenie3data.txt");
+            // deformation from before
             int def2 = shortestPath(mattrix);
-            System.out.println(def2);
+            System.out.println("Deformation from behind = " + def2);
         }
         catch(Exception e)
         {
