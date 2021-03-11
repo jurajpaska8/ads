@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Cvicenie4 {
 
-    public static int[][] loadMattrix(String path, String delimiter, int rows, int cols) throws FileNotFoundException
+    public static int[][] loadMatrix(String path, String delimiter, int rows, int cols) throws FileNotFoundException
     {
         Scanner sc = new Scanner(new BufferedReader(new FileReader(path)));
         int [][] myArray = new int[rows][cols];
@@ -24,27 +24,26 @@ public class Cvicenie4 {
     }
 
     /**
-     * input mattrix contains 4 numbers in row. Function resizes this matrix. 2 numbers in row i, 2 numbers in i + 1 row in  outputMatrix.
-     *
+     * input mattrix contains 4 numbers in row. Function resizes this matrix. 2 numbers in row [i], 2 numbers in [i + 1] row in  outputMatrix.
+     * Therefore has outputMatrix 2 times more rows
      * */
-    private static int [][] transformMattrix(int[][] inputMattrix)
+    private static int [][] transformMatrix(int[][] inputMatrix)
     {
-        int [][] outputMattrix = new int [inputMattrix.length * 2][inputMattrix[0].length / 2];
-        for(int i = 0; i < inputMattrix.length; i++)
+        int [][] outputMattrix = new int [inputMatrix.length * 2][inputMatrix[0].length / 2];
+        for(int i = 0; i < inputMatrix.length; i++)
         {
-            outputMattrix[2 * i][0] = inputMattrix[i][0];
-            outputMattrix[2 * i][1] = inputMattrix[i][1];
-            outputMattrix[2 * i + 1][0] = inputMattrix[i][2];
-            outputMattrix[2 * i + 1][1] = inputMattrix[i][3];
+            outputMattrix[2 * i][0] = inputMatrix[i][0];
+            outputMattrix[2 * i][1] = inputMatrix[i][1];
+            outputMattrix[2 * i + 1][0] = inputMatrix[i][2];
+            outputMattrix[2 * i + 1][1] = inputMatrix[i][3];
         }
         return outputMattrix;
     }
 
-    private static int knapSackProblemBasic(int W, int values[], int weights[], int n, Set<Integer> indexes)
+    private static int knappSackProblemBasic(int W, int[] values, int[] weights, int n)
     {
         // row with zeros, column with zeros
-        int arr[][] = new int[n + 1][W + 1];
-        int firstValueOfItem = -1;
+        int[][] arr = new int[n + 1][W + 1];
 
         // construct table
         for(int i = 0; i <= n; i++)
@@ -64,10 +63,6 @@ public class Cvicenie4 {
                 // else we choose maximum with/without selecting item
                 else
                 {
-                    if(values[i - 1] + arr[i - 1][w - weights[i - 1]] > arr[i - 1][w])
-                    {
-                        indexes.add(i - 1);
-                    }
                     arr[i][w] = Math.max(arr[i - 1][w], values[i - 1] + arr[i - 1][w - weights[i - 1]]);
                 }
             }
@@ -79,8 +74,8 @@ public class Cvicenie4 {
     {
         // we have 2000 rows, but we can choose only from doubles (0th or 1th, 2th or 3th...)
         // therefore matrix with n / 2 + 1 rows is sufficient
-        int arr[][] = new int[n / 2 + 1][W + 1];
-        int tmp = 0;
+        int[][] arr = new int[n / 2 + 1][W + 1];
+
         // construct table
         for(int i = 0; i <= n / 2; i++)
         {
@@ -127,20 +122,22 @@ public class Cvicenie4 {
         {
             int rows = 1000;
             int cols = 4;
-            int[][] mattrix = loadMattrix("data/cvicenie4data.txt", ",", rows, cols);
-            int[][] transformedMattrix = transformMattrix(mattrix);
-            Set<Integer> listOfIndexes = new HashSet<>();
+            int[][] matrix = loadMatrix("data/cvicenie4data.txt", ",", rows, cols);
+            int[][] transformedMatrix = transformMatrix(matrix);
 
-            int[] values = new int[transformedMattrix.length];
-            int[] weights = new int[transformedMattrix.length];
+            // values, weights, number of rows n, max Weight W
+            int[] values = new int[transformedMatrix.length];
+            int[] weights = new int[transformedMatrix.length];
             int W = 2000;
-            for(int i = 0; i < transformedMattrix.length; i++)
+            int n = transformedMatrix.length;
+
+            for(int i = 0; i < transformedMatrix.length; i++)
             {
-                values[i] = transformedMattrix[i][0];
-                weights[i] = transformedMattrix[i][1];
+                values[i] = transformedMatrix[i][0];
+                weights[i] = transformedMatrix[i][1];
             }
-            int maxKnapsackValue = knapSackProblemBasic(W, values, weights, 2000, listOfIndexes);
-            int maxKnapsackValueExercise = knappSackProblemExercise(W, values, weights, 2000);
+            int maxKnapsackValue = knappSackProblemBasic(W, values, weights, n);
+            int maxKnapsackValueExercise = knappSackProblemExercise(W, values, weights, n);
             System.out.println("End");
         }
         catch (FileNotFoundException e)
