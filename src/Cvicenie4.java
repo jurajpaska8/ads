@@ -70,6 +70,11 @@ public class Cvicenie4 {
         return arr[n][W];
     }
 
+    /**
+     * Limitations in contrasts with classic problem:
+     * we can not count values and weights from every row, but we can ony choose best from [0],[1] / [2],[3] / ... / [2*i],[2*i+1] / ...
+     *
+     * */
     private static int knappSackProblemExercise(int W, int[] values, int[] weights, int n)
     {
         // we have 2000 rows, but we can choose only from doubles (0th or 1th, 2th or 3th...)
@@ -138,7 +143,7 @@ public class Cvicenie4 {
             }
             int maxKnapsackValue = knappSackProblemBasic(W, values, weights, n);
             int maxKnapsackValueExercise = knappSackProblemExercise(W, values, weights, n);
-            System.out.println("End");
+            System.out.println("Value = " + maxKnapsackValueExercise);
         }
         catch (FileNotFoundException e)
         {
